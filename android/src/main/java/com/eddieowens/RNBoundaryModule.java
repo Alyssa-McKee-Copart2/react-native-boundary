@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import android.util.Log;
 
 public class RNBoundaryModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
@@ -250,5 +251,19 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
 
     @Override
     public void onHostDestroy() {
+        Log.i("RNBoundary", "Host Destroyed");
+        mGeofencingClient.removeGeofences(getBoundaryPendingIntent())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "Successfully removed all geofences");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "Failed to remove all geofences");
+                    }
+                });
     }
 }

@@ -10,6 +10,8 @@ import com.eddieowens.services.BoundaryEventJobIntentService;
 
 import static com.eddieowens.RNBoundaryModule.TAG;
 
+import com.reactnativenavigation.NavigationApplication;
+
 public class BoundaryEventBroadcastReceiver extends BroadcastReceiver {
 
     public BoundaryEventBroadcastReceiver() {
@@ -18,6 +20,9 @@ public class BoundaryEventBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "Broadcasting geofence event");
-        JobIntentService.enqueueWork(context, BoundaryEventJobIntentService.class, 0, intent);
+        if (NavigationApplication.instance.isReactContextInitialized()) {
+            // Log.d(TAG, "React Context initialized");
+            JobIntentService.enqueueWork(context, BoundaryEventJobIntentService.class, 0, intent);
+        } // else Log.d(TAG, "React Context NOT initialized");
     }
 }

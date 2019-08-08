@@ -16,7 +16,7 @@ export {
 }
 
 const HeadlessBoundaryEventTask = async ({event, ids}) => {
-  console.log(event, ids);
+  // console.log(event, ids);
   boundaryEventEmitter.emit(event, ids)
 };
 
@@ -69,4 +69,3 @@ export default {
     return RNBoundary.remove(id);
   }
 }
-

@@ -46,5 +46,6 @@ def googlePlayServicesVersion = rootProject.hasProperty('googlePlayServicesVersi
 dependencies {
     implementation "com.google.android.gms:play-services-location:$googlePlayServicesVersion"
     api 'com.facebook.react:react-native:+'
+    implementation "com.android.support:support-v4:26.1.0"
+    compile project(':react-native-navigation')
 }
-  

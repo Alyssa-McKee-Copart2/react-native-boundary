@@ -16,6 +16,7 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.ArrayList;
 
 import static com.eddieowens.RNBoundaryModule.TAG;
+import com.reactnativenavigation.NavigationApplication;
 
 public class BoundaryEventJobIntentService extends JobIntentService {
 
@@ -28,6 +29,9 @@ public class BoundaryEventJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
+        // dont do anything if the app isn't initialized
+        // TODO: figure out how to remove all boundaries from the GeofenceClient
+        if (!NavigationApplication.instance.isReactContextInitialized()) return;
         Log.i(TAG, "Handling geofencing event");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
 
