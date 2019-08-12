@@ -28,13 +28,18 @@ export default {
       throw TAG + ': a boundary must be an array or non-null object';
     }
     return new Promise((resolve, reject) => {
-      if (typeof boundary === 'object' && !boundary.id) {
-        reject(TAG + ': an id is required')
+      if (Array.isArray(boundary)) {
+        RNBoundary.addList(boundary)
+          .then(id => resolve(id))
+          .catch(e => reject(e))
+      } else {
+        if (typeof boundary === 'object' && !boundary.id) {
+          reject(TAG + ': an id is required')
+        }
+        RNBoundary.add(boundary)
+          .then(id => resolve(id))
+          .catch(e => reject(e))
       }
-
-      RNBoundary.add(boundary)
-        .then(id => resolve(id))
-        .catch(e => reject(e))
     })
   },
 
@@ -65,7 +70,9 @@ export default {
     if (!id || (id.constructor !== Array && typeof id !== 'string')) {
       throw TAG + ': id must be a string';
     }
-
+    if (Array.isArray(id)) {
+      return RNBoundary.removeList(id)
+    }
     return RNBoundary.remove(id);
   }
 }

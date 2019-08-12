@@ -71,7 +71,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void remove(final ReadableArray readableArray, Promise promise) {
+    public void removeList(final ReadableArray readableArray, Promise promise) {
 
         final List<String> boundaryRequestIds = new ArrayList<>();
         for (int i = 0; i < readableArray.size(); ++i) {
@@ -88,7 +88,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void add(final ReadableArray readableArray, final Promise promise) {
+    public void addList(final ReadableArray readableArray, final Promise promise) {
         final List<Geofence> geofences = createGeofences(readableArray);
         final WritableArray geofenceRequestIds = Arguments.createArray();
         for (Geofence g : geofences) {

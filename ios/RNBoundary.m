@@ -36,6 +36,33 @@ RCT_EXPORT_METHOD(add:(NSDictionary*)boundary addWithResolver:(RCTPromiseResolve
         reject(@"PERM", @"Access fine location is not permitted", [NSError errorWithDomain:@"boundary" code:200 userInfo:@{@"Error reason": @"Invalid permissions"}]);
     }
 }
+RCT_EXPORT_METHOD(addList:(NSArray*)boundaries addWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    if (CLLocationManager.authorizationStatus != kCLAuthorizationStatusAuthorizedAlways) {
+        [self.locationManager requestAlwaysAuthorization];
+    }
+
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways) {
+        NSMutableArray *boundaryIds;
+        boundaryIds = [[NSMutableArray alloc] init];
+
+        for (NSDictionary *boundary in boundaries) {
+            NSString *id = boundary[@"id"];
+
+            [boundaryIds addObject:id];
+
+            CLLocationCoordinate2D center = CLLocationCoordinate2DMake([boundary[@"lat"] doubleValue], [boundary[@"lng"] doubleValue]);
+            CLRegion *boundaryRegion = [[CLCircularRegion alloc]initWithCenter:center
+                                                                    radius:[boundary[@"radius"] doubleValue]
+                                                                identifier:id];
+
+            [self.locationManager startMonitoringForRegion:boundaryRegion];
+        }
+        resolve(boundaryIds);
+    } else {
+        reject(@"PERM", @"Access fine location is not permitted", [NSError errorWithDomain:@"boundary" code:200 userInfo:@{@"Error reason": @"Invalid permissions"}]);
+    }
+}
 
 RCT_EXPORT_METHOD(remove:(NSString *)boundaryId removeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -44,6 +71,19 @@ RCT_EXPORT_METHOD(remove:(NSString *)boundaryId removeWithResolver:(RCTPromiseRe
     } else {
         reject(@"@no_boundary", @"No boundary with the provided id was found", [NSError errorWithDomain:@"boundary" code:200 userInfo:@{@"Error reason": @"Invalid boundary ID"}]);
     }
+}
+
+RCT_EXPORT_METHOD(removeList:(NSArray *)boundaryIds removeWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableArray *removedIds;
+    removedIds = [[NSMutableArray alloc] init];
+
+    for(NSString *boundaryId in boundaryIds) {
+        if ([self removeBoundary:boundaryId]) {
+            [removedIds addObject:boundaryId];
+        }
+    }
+    resolve(removedIds);
 }
 
 RCT_EXPORT_METHOD(removeAll:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
@@ -98,4 +138,3 @@ RCT_EXPORT_METHOD(removeAll:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 }
 
 @end
-
