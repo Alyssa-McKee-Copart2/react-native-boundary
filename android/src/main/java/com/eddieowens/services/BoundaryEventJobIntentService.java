@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
+import android.os.Build;
+import android.app.ActivityManager;
 
 import com.eddieowens.RNBoundaryModule;
 import com.eddieowens.errors.GeofenceErrorMessages;
@@ -14,6 +16,8 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.lang.Exception;
 
 import static com.eddieowens.RNBoundaryModule.TAG;
 import com.reactnativenavigation.NavigationApplication;
@@ -29,9 +33,18 @@ public class BoundaryEventJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        // dont do anything if the app isn't initialized
-        // TODO: figure out how to remove all boundaries from the GeofenceClient
-        if (!NavigationApplication.instance.isReactContextInitialized()) return;
+        if (!canHandleJob()) {
+            // safety net, don't start the service if the OS >= Oreo and app is in background
+            // TODO: actually fix this for Oreo+ devices, using foreground service? a different headlessJSService that implements Jobs?
+            Log.i(TAG, "Can not handle geofence event. Job cannot be safely handled");
+            return;
+        }
+        if (!NavigationApplication.instance.isReactContextInitialized()) {
+            // dont do anything if the app isn't initialized, or job can not be safely handled
+            Log.i(TAG, "Can not handle geofence event. React not initialized");
+            return;
+        };
+
         Log.i(TAG, "Handling geofencing event");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
 
@@ -71,8 +84,37 @@ public class BoundaryEventJobIntentService extends JobIntentService {
 
         Intent headlessBoundaryIntent = new Intent(context, BoundaryEventHeadlessTaskService.class);
         headlessBoundaryIntent.putExtras(bundle);
-
-        context.startService(headlessBoundaryIntent);
-        HeadlessJsTaskService.acquireWakeLockNow(context);
+        try {
+            context.startService(headlessBoundaryIntent);
+            HeadlessJsTaskService.acquireWakeLockNow(context);
+        } catch (Exception e) {
+            // one final safety net to prevent the app from crashing if starting the service still throws an exception
+            // TODO: Crashlytics Non-Fatal Exception?
+            Log.i(TAG, "EXCEPTION Caught starting the HeadlessJS Task: " + e.getMessage());
+        }
+    }
+    private boolean canHandleJob() {
+        boolean osIsBeforeOreo = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
+        return osIsBeforeOreo || isAppOnForeground(this.getApplicationContext());
+    }
+    private boolean isAppOnForeground(Context context) {
+        /**
+         http://stackoverflow.com/questions/8489993/check-android-application-is-in-foreground-or-not
+        **/
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses =
+        activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance ==
+            ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+             appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
