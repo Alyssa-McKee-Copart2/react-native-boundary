@@ -151,8 +151,9 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
 
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            promise.reject("PERM", "Access fine location is not permitted");
+            promise.reject(TAG, "Access fine location is not permitted");
         } else {
+            Log.i(TAG, "Adding geofence...");
             mGeofencingClient.addGeofences(
                     geofencingRequest,
                     getBoundaryPendingIntent()
@@ -160,12 +161,14 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            Log.i(TAG, "Successfully added geofence.");
                             promise.resolve(geofenceRequestIds);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            Log.i(TAG, "Failed to add geofence.");
                             promise.reject(e);
                         }
                     });
@@ -182,9 +185,9 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
         }
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            promise.reject("PERM", "Access fine location is not permitted. Hello");
+            promise.reject(TAG, "Access fine location is not permitted");
         } else {
-            Log.i(TAG, "Attempting to add geofence.");
+            Log.i(TAG, "Adding geofence...");
 
             mGeofencingClient.addGeofences(
                     geofencingRequest,
@@ -208,7 +211,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     private void removeGeofence(final Promise promise, final List<String> requestIds) {
-        Log.i(TAG, "Attempting to remove geofence.");
+        Log.i(TAG, "Removing geofence...");
         mGeofencingClient.removeGeofences(requestIds)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
