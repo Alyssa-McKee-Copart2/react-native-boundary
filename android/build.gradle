@@ -48,4 +48,5 @@ dependencies {
     api 'com.facebook.react:react-native:+'
     implementation "com.android.support:support-v4:26.1.0"
     compile project(':react-native-navigation')
+    implementation('com.crashlytics.sdk.android:crashlytics:+')
 }

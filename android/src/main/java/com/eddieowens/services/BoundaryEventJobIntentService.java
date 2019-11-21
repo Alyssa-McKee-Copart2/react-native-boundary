@@ -18,6 +18,7 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Exception;
+import com.crashlytics.android.Crashlytics;
 
 import static com.eddieowens.RNBoundaryModule.TAG;
 import com.reactnativenavigation.NavigationApplication;
@@ -88,6 +89,7 @@ public class BoundaryEventJobIntentService extends JobIntentService {
             context.startService(headlessBoundaryIntent);
             HeadlessJsTaskService.acquireWakeLockNow(context);
         } catch (Exception e) {
+            Crashlytics.logException(e);
             // one final safety net to prevent the app from crashing if starting the service still throws an exception
             // TODO: Crashlytics Non-Fatal Exception?
             Log.i(TAG, "EXCEPTION Caught starting the HeadlessJS Task: " + e.getMessage());
