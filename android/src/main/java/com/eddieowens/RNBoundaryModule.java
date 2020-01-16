@@ -145,9 +145,9 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
         int permission = ActivityCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
 
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            permission = requestPermissions();
-        }
+        // if (permission != PackageManager.PERMISSION_GRANTED) {
+        //     permission = requestPermissions();
+        // }
 
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -180,9 +180,9 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
         int permission = ActivityCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
 
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            permission = requestPermissions();
-        }
+        // if (permission != PackageManager.PERMISSION_GRANTED) {
+        //     permission = requestPermissions();
+        // }
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
             promise.reject(TAG, "Access fine location is not permitted");
@@ -230,11 +230,11 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     private int requestPermissions() {
-        ActivityCompat.requestPermissions(getReactApplicationContext().getCurrentActivity(),
-                new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                }, 1);
+        // ActivityCompat.requestPermissions(getReactApplicationContext().getCurrentActivity(),
+        //         new String[]{
+        //                 Manifest.permission.ACCESS_FINE_LOCATION,
+        //                 Manifest.permission.ACCESS_COARSE_LOCATION
+        //         }, 1);
 
         return ActivityCompat.checkSelfPermission(getReactApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
     }
