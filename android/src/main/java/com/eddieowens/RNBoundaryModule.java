@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.os.Build;
 
 import com.eddieowens.receivers.BoundaryEventBroadcastReceiver;
 import com.facebook.react.bridge.Arguments;
@@ -136,8 +137,8 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
             return mBoundaryPendingIntent;
         }
         Intent intent = new Intent(getReactApplicationContext(), BoundaryEventBroadcastReceiver.class);
-        mBoundaryPendingIntent = PendingIntent.getBroadcast(getReactApplicationContext(), 0, intent, PendingIntent.
-                FLAG_UPDATE_CURRENT);
+        final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        mBoundaryPendingIntent = PendingIntent.getBroadcast(getReactApplicationContext(), 0, intent, flag);
         return mBoundaryPendingIntent;
     }
 
