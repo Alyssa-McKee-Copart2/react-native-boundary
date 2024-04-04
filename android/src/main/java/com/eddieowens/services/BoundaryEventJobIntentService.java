@@ -3,8 +3,8 @@ package com.eddieowens.services;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 import android.util.Log;
 import android.os.Build;
 import android.app.ActivityManager;
@@ -17,11 +17,8 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.Exception;
-import com.crashlytics.android.Crashlytics;
 
 import static com.eddieowens.RNBoundaryModule.TAG;
-import com.reactnativenavigation.NavigationApplication;
 
 public class BoundaryEventJobIntentService extends JobIntentService {
 
@@ -34,18 +31,6 @@ public class BoundaryEventJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        if (!canHandleJob()) {
-            // safety net, don't start the service if the OS >= Oreo and app is in background
-            // TODO: actually fix this for Oreo+ devices, using foreground service? a different headlessJSService that implements Jobs?
-            Log.i(TAG, "Can not handle geofence event. Job cannot be safely handled");
-            return;
-        }
-        if (!NavigationApplication.instance.isReactContextInitialized()) {
-            // dont do anything if the app isn't initialized, or job can not be safely handled
-            Log.i(TAG, "Can not handle geofence event. React not initialized");
-            return;
-        };
-
         Log.i(TAG, "Handling geofencing event");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
 
@@ -85,19 +70,21 @@ public class BoundaryEventJobIntentService extends JobIntentService {
 
         Intent headlessBoundaryIntent = new Intent(context, BoundaryEventHeadlessTaskService.class);
         headlessBoundaryIntent.putExtras(bundle);
-        try {
+
+        if (canHandleJob(context)) {
             context.startService(headlessBoundaryIntent);
             HeadlessJsTaskService.acquireWakeLockNow(context);
-        } catch (Exception e) {
-            Crashlytics.logException(e);
-            // one final safety net to prevent the app from crashing if starting the service still throws an exception
-            // TODO: Crashlytics Non-Fatal Exception?
-            Log.i(TAG, "EXCEPTION Caught starting the HeadlessJS Task: " + e.getMessage());
+        } else {
+            // Since Oreo (8.0) and up they have restricted starting background services, and it will crash the app
+            // But we can create a foreground service and bring an notification to the front
+            // http://stackoverflow.com/questions/8489993/check-android-application-is-in-foreground-or-not
+            context.startForegroundService(headlessBoundaryIntent);
         }
     }
-    private boolean canHandleJob() {
+    private boolean canHandleJob(Context context) {
+
         boolean osIsBeforeOreo = Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
-        return osIsBeforeOreo || isAppOnForeground(this.getApplicationContext());
+        return osIsBeforeOreo || isAppOnForeground(context);
     }
     private boolean isAppOnForeground(Context context) {
         /**

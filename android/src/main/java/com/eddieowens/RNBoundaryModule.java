@@ -4,8 +4,8 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.os.Build;
 
@@ -29,7 +29,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import android.util.Log;
 
 public class RNBoundaryModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
@@ -89,7 +88,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void addList(final ReadableArray readableArray, final Promise promise) {
+    public void add(final ReadableArray readableArray, final Promise promise) {
         final List<Geofence> geofences = createGeofences(readableArray);
         final WritableArray geofenceRequestIds = Arguments.createArray();
         for (Geofence g : geofences) {
@@ -188,7 +187,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
         if (permission != PackageManager.PERMISSION_GRANTED) {
             promise.reject(TAG, "Access fine location is not permitted");
         } else {
-            Log.i(TAG, "Adding geofence...");
+            Log.i(TAG, "Attempting to add geofence...");
 
             mGeofencingClient.addGeofences(
                     geofencingRequest,
@@ -212,7 +211,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     private void removeGeofence(final Promise promise, final List<String> requestIds) {
-        Log.i(TAG, "Removing geofence...");
+        Log.i(TAG, "Attempting to remove geofence...");
         mGeofencingClient.removeGeofences(requestIds)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -255,19 +254,19 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
 
     @Override
     public void onHostDestroy() {
-        Log.i("RNBoundary", "Host Destroyed");
-        mGeofencingClient.removeGeofences(getBoundaryPendingIntent())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.i(TAG, "Successfully removed all geofences");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "Failed to remove all geofences");
-                    }
-                });
+        // Log.i("RNBoundary", "Host Destroyed");
+        // mGeofencingClient.removeGeofences(getBoundaryPendingIntent())
+        //         .addOnSuccessListener(new OnSuccessListener<Void>() {
+        //             @Override
+        //             public void onSuccess(Void aVoid) {
+        //                 Log.i(TAG, "Successfully removed all geofences");
+        //             }
+        //         })
+        //         .addOnFailureListener(new OnFailureListener() {
+        //             @Override
+        //             public void onFailure(@NonNull Exception e) {
+        //                 Log.i(TAG, "Failed to remove all geofences");
+        //             }
+        //         });
     }
 }
