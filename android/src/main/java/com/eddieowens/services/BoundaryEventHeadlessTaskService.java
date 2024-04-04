@@ -22,6 +22,7 @@ public class BoundaryEventHeadlessTaskService extends HeadlessJsTaskService {
     private static final String KEY_NOTIFICATION_TITLE = "rnboundary.notification_title";
     private static final String KEY_NOTIFICATION_TEXT = "rnboundary.notification_text";
     private static final String KEY_NOTIFICATION_ICON = "rnboundary.notification_icon";
+    private static final String KEY_NOTIFICATION_ICON_COLOR = "rnboundary.notification_icon_color";
     private static final String KEY_NOTIFICATION_CHANNEL_NAME = "rnboundary.notification_channel_name";
     private static final String KEY_NOTIFICATION_CHANNEL_DESCRIPTION = "rnboundary.notification_channel_description";
 
@@ -40,13 +41,14 @@ public class BoundaryEventHeadlessTaskService extends HeadlessJsTaskService {
         String title = "Geofencing in progress";
         String text = "You're close to the configured location";
         int iconResource = -1;
-
+        int iconColorResource = R.color.accent_material_light;
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
             title = bundle.getString(KEY_NOTIFICATION_TITLE, title);
             text = bundle.getString(KEY_NOTIFICATION_TEXT, text);
             iconResource = bundle.getInt(KEY_NOTIFICATION_ICON, -1);
+            iconColorResource = bundle.getInt(KEY_NOTIFICATION_ICON_COLOR, R.color.accent_material_light);
         } catch (Exception e) {
             Log.e(TAG, "Cannot get application Bundle " + e.toString());
         }
@@ -57,7 +59,7 @@ public class BoundaryEventHeadlessTaskService extends HeadlessJsTaskService {
             .setContentTitle(title)
             .setContentText(text)
             .setOngoing(true)
-            .setColor(ContextCompat.getColor(context, R.color.accent_material_light));
+            .setColor(ContextCompat.getColor(context, iconColorResource));
 
         if (iconResource > -1) {
             builder.setSmallIcon(iconResource);
