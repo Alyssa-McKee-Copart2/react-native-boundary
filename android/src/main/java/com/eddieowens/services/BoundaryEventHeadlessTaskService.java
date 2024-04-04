@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -16,6 +17,9 @@ import com.eddieowens.R;
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.facebook.react.bridge.Arguments;
+
+import java.util.Random;
+import static com.eddieowens.RNBoundaryModule.TAG;
 
 public class BoundaryEventHeadlessTaskService extends HeadlessJsTaskService {
     public static final String NOTIFICATION_CHANNEL_ID = "com.eddieowens.GEOFENCE_SERVICE_CHANNEL";
