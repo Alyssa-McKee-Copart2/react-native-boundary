@@ -12,5 +12,6 @@
 - (bool) removeBoundary:(NSString *)boundaryId;
 - (void) removeAllBoundaries;
 @property (strong, nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) BOOL hasListeners;
 @end
   
