@@ -4,6 +4,17 @@ const {RNBoundary} = NativeModules;
 
 const TAG = "RNBoundary";
 
+if (!RNBoundary) {
+  const errorMessage =
+    Platform.OS === 'ios'
+      ? `Could not find module "RNBoundary".\nDid you forget to run "pod install" ?`
+      : `Could not find module "RNBoundary".`;
+  console.error(errorMessage);
+}
+
+// react comment: 
+// We have migrated all existing code passing a native module to `NativeEventEmtiter` to only pass it on iOS, so we don't change this behavior in existing code.
+// ?
 const boundaryEventEmitter = new NativeEventEmitter(RNBoundary);
 
 const Events = {

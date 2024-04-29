@@ -11,9 +11,22 @@ RCT_EXPORT_MODULE()
     if (self) {
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
+        self.hasListeners = NO;
     }
 
     return self;
+}
+
+// Will be called when this module's first listener is added.
+-(void)startObserving {
+    self.hasListeners = YES;
+    // Set up any upstream listeners or background tasks as necessary
+}
+
+// Will be called when this module's last listener is removed, or on dealloc.
+-(void)stopObserving {
+    self.hasListeners = NO;
+    // Remove upstream listeners, stop unnecessary background tasks
 }
 
 RCT_EXPORT_METHOD(add:(NSDictionary*)boundary addWithResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
@@ -123,13 +136,18 @@ RCT_EXPORT_METHOD(removeAll:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region
 {
     NSLog(@"didEnter : %@", region);
-    [self sendEventWithName:@"onEnter" body:region.identifier];
+    if (self.hasListeners) {// Only send events if anyone is listening
+        [self sendEventWithName:@"onEnter" body:region.identifier];
+    }
+    
 }
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region
 {
     NSLog(@"didExit : %@", region);
-    [self sendEventWithName:@"onExit" body:region.identifier];
+    if (self.hasListeners) {// Only send events if anyone is listening
+        [self sendEventWithName:@"onExit" body:region.identifier];
+    }
 }
 
 + (BOOL)requiresMainQueueSetup
