@@ -88,7 +88,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void add(final ReadableArray readableArray, final Promise promise) {
+    public void addList(final ReadableArray readableArray, final Promise promise) {
         final List<Geofence> geofences = createGeofences(readableArray);
         final WritableArray geofenceRequestIds = Arguments.createArray();
         for (Geofence g : geofences) {
