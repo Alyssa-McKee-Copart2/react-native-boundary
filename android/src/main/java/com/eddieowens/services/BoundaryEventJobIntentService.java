@@ -33,29 +33,33 @@ public class BoundaryEventJobIntentService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent intent) {
         Log.i(TAG, "Handling geofencing event");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-
-        Log.i(TAG, "Geofence transition: " + geofencingEvent.getGeofenceTransition());
-        if (geofencingEvent.hasError()) {
-            Log.e(TAG, "Error in handling geofence " + GeofenceErrorMessages.getErrorString(geofencingEvent.getErrorCode()));
-            return;
-        }
-        switch (geofencingEvent.getGeofenceTransition()) {
-            case Geofence.GEOFENCE_TRANSITION_ENTER:
-                Log.i(TAG, "Enter geofence event detected. Sending event.");
-                final ArrayList<String> enteredGeofences = new ArrayList<>();
-                for (Geofence geofence : geofencingEvent.getTriggeringGeofences()) {
-                    enteredGeofences.add(geofence.getRequestId());
-                }
-                sendEvent(this.getApplicationContext(), ON_ENTER, enteredGeofences);
-                break;
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                Log.i(TAG, "Exit geofence event detected. Sending event.");
-                final ArrayList<String> exitingGeofences = new ArrayList<>();
-                for (Geofence geofence : geofencingEvent.getTriggeringGeofences()) {
-                    exitingGeofences.add(geofence.getRequestId());
-                }
-                sendEvent(this.getApplicationContext(), ON_EXIT, exitingGeofences);
-                break;
+        
+        if(geofencingEvent != null) {
+            Log.i(TAG, "Geofence transition: " + geofencingEvent.getGeofenceTransition());
+            if (geofencingEvent.hasError()) {
+                Log.e(TAG, "Error in handling geofence " + GeofenceErrorMessages.getErrorString(geofencingEvent.getErrorCode()));
+                return;
+            }
+            switch (geofencingEvent.getGeofenceTransition()) {
+                case Geofence.GEOFENCE_TRANSITION_ENTER:
+                    Log.i(TAG, "Enter geofence event detected. Sending event.");
+                    final ArrayList<String> enteredGeofences = new ArrayList<>();
+                    for (Geofence geofence : geofencingEvent.getTriggeringGeofences()) {
+                        enteredGeofences.add(geofence.getRequestId());
+                    }
+                    sendEvent(this.getApplicationContext(), ON_ENTER, enteredGeofences);
+                    break;
+                case Geofence.GEOFENCE_TRANSITION_EXIT:
+                    Log.i(TAG, "Exit geofence event detected. Sending event.");
+                    final ArrayList<String> exitingGeofences = new ArrayList<>();
+                    for (Geofence geofence : geofencingEvent.getTriggeringGeofences()) {
+                        exitingGeofences.add(geofence.getRequestId());
+                    }
+                    sendEvent(this.getApplicationContext(), ON_EXIT, exitingGeofences);
+                    break;
+            }
+        } else {
+            Log.e(TAG, "GeofencingEvent is null");
         }
     }
 
