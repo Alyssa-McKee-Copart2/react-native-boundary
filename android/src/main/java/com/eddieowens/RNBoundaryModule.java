@@ -136,7 +136,7 @@ public class RNBoundaryModule extends ReactContextBaseJavaModule implements Life
             return mBoundaryPendingIntent;
         }
         Intent intent = new Intent(getReactApplicationContext(), BoundaryEventBroadcastReceiver.class);
-        final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
+        final int flag =  Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT;
         mBoundaryPendingIntent = PendingIntent.getBroadcast(getReactApplicationContext(), 0, intent, flag);
         return mBoundaryPendingIntent;
     }
